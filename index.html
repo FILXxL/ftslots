@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    
+    <link rel="stylesheet" type="text/css" href="slot-machine.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/styles.css" />
+    
+    
+    <script type="text/javascript" src="slot-machine.min.js"></script>
+    <script src="parameters.js"></script>
+    <script>
+      var options = {
+        sounds: {
+          reelsBegin: 'sounds/reelsBegin.mp3',
+          reelsEnd: 'sounds/reelsEnd.mp3',
+        }
+      };
+
+      var reels = [
+        {
+          imageSrc: 'images/reel-strip1.png',
+          symbols: [
+            {
+              title: 'cherry',
+              position: 100,
+              weight: 2
+            },
+            {
+              title: 'plum',
+              position: 300,
+              weight: 6
+            },
+            {
+              title: 'orange',
+              position: 500,
+              weight: 5
+            },
+            {
+              title: 'bell',
+              position: 700,
+              weight: 1
+            },
+            {
+              title: 'cherry',
+              position: 900,
+              weight: 3
+            },
+            {
+              title: 'plum',
+              position: 1100,
+              weight: 5
+            }
+          ]
+        },
+        {
+          imageSrc: 'images/reel-strip2.png',
+          symbols: [
+            {
+              title: 'orange',
+              position: 100,
+              weight: 6
+            },
+            {
+              title: 'plum',
+              position: 300,
+              weight: 5
+            },
+            {
+              title: 'orange',
+              position: 500,
+              weight: 3
+            },
+            {
+              title: 'plum',
+              position: 700,
+              weight: 5
+            },
+            {
+              title: 'cherry',
+              position: 900,
+              weight: 2
+            },
+            {
+              title: 'bell',
+              position: 1100,
+              weight: 1
+            }
+          ]
+        },
+        {
+          imageSrc: 'images/reel-strip3.png',
+          symbols: [
+            {
+              title: 'cherry',
+              position: 100,
+              weight: 4
+            },
+            {
+              title: 'bell',
+              position: 300,
+              weight: 1
+            },
+            {
+              title: 'orange',
+              position: 500,
+              weight: 6
+            },
+            {
+              title: 'plum',
+              position: 700,
+              weight: 5
+            },
+            {
+              title: 'plum',
+              position: 900,
+              weight: 3
+            },
+            {
+              title: 'cherry',
+              position: 1100,
+              weight: 2
+            }
+          ]
+        }
+      ];
+
+      window.onload = function() {
+        var credits  = document.querySelector('#slot-credits strong');
+        var winnings = 10000;
+
+        var callback = function(payLine) {
+
+          // Pay lines consist of an array of symbols[], first payline being 0 → ∞
+          console.log(payLine[0].title + ' | ' + payLine[1].title + ' | ' + payLine[2].title);
+
+          // If all three symbols match..
+          if (payLine[0].title === payLine[1].title && payLine[0].title === payLine[2].title) {
+            (new Audio('sounds/winner.mp3')).play();
+
+            // .. payout winnings
+            switch (payLine[0].title) {
+              case 'bell':
+                winnings += 50;
+                break;
+
+              case 'cherry':
+                winnings += 25;
+                break;
+
+              case 'orange':
+                winnings += 10;
+                break;
+
+              case 'plum':
+                winnings += 5;
+                break;
+            }
+
+            credits.innerText = winnings;
+          }
+
+          button.disabled = false;
+        };
+
+        var container = document.getElementById('slot-machine');
+
+        var slot = slotMachine(container, reels, callback, options);
+
+        var button = document.getElementById('play-button');
+
+        // Hide the play button initially
+        button.style.display = 'none';
+
+        window.addEventListener('keydown', function(event) {
+          if (event.code === 'Space') {
+            playSlot();
+          }
+        });
+
+        // Add event listener for tap on mobile
+        document.addEventListener('touchstart', function() {
+          playSlot();
+        });
+
+        // Remove the click event listener for the play button
+        button.removeEventListener('click', function() {});
+
+        function playSlot() {
+          if (button.disabled || winnings === 0) {
+            return;
+          }
+
+          credits.innerText = winnings -= 1;
+
+          slot.play();
+
+          button.disabled = true;
+        }
+      };
+    </script>
+  </head>
+  <body>
+    <video id="backgroundVideo" loop autoplay muted>
+      
+  </video>
+    <img src="images/casino1.png" alt="Casino Image" id="topImage">
+    
+    <div id="slot-machine" class="slot-machine">
+      <img src="gifs/lights1.gif" alt="slotbox" id="slotbox">
+    </div>
+    <img src="gifs/lights2.gif" alt="Bottom Left GIF" id="bottomLeftGif">
+    <img src="gifs/lights2.gif" alt="Bottom Right GIF" id="bottomRightGif">
+    <img src="gifs/lights2.gif" alt="Top Left GIF" id="topleftGif">
+    <img src="gifs/lights2.gif" alt="Top Right GIF" id="topRightGif">
+    <div id="slot-credits">
+      Credits <strong>5</strong> | <a href="https://github.com/nuxy/slot-machine-gen">Github</a>
+    </div>
+
+    <button id="play-button">Play <small>(1 credit)</small></button>
+  </body>
+</html>
